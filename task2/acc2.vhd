@@ -54,11 +54,14 @@ architecture rtl of acc is
   signal row_3, next_row_3: std_logic_vector(79 downto 0) := (others => '0');
   signal write_buff, next_write_buff: word_t;
   signal result: std_logic_vector(7 downto 0);
+  signal dx, dy: integer range -1024 to 1023;  -- Increase range to avoid overflow during intermediate sums
+  signal abs_dx, abs_dy, sobel_sum: integer range 0 to 2047;  -- Store the absolute values and their sum
+  signal result_int: integer range 0 to 255;   -- Store the final result after division
 
 begin
 
     -- Combinational logic for state transitions and output logic
-    cl: process(reset, dataR, start, state, addr_ptr, row_1, row_2, row_3)
+    cl: process(reset, dataR, start, state, addr_ptr, row_1, row_2, row_3, write_buff)
     constant row_2_offs: integer := 88;
     constant row_3_offs: integer := 176;
     constant write_offs: integer := 25344;
@@ -74,22 +77,32 @@ begin
         dataW <= (others => '0');
         addr <= (others => '0');
         
-        -- calculate the convolution
-        result <= std_logic_vector(
-            to_unsigned(
-                (abs(to_integer(signed(row_1(7 downto 0)))    -- s13
-                - to_integer(signed(row_1(23 downto 16)))     -- s11
-                + 2 * (to_integer(signed(row_2(7 downto 0)))  -- s23
-                - to_integer(signed(row_2(23 downto 16))))    -- s21
-                + to_integer(signed(row_3(7 downto 0)))       -- s33
-                - to_integer(signed(row_3(23 downto 16))))    -- s31
-                + abs(to_integer(signed(row_1(23 downto 16))) -- s11
-                - to_integer(signed(row_3(23 downto 16)))     -- s31
-                + 2 * (to_integer(signed(row_1(15 downto 8))) -- s12
-                - to_integer(signed(row_3(15 downto 8))))     -- s32
-                + to_integer(signed(row_1(7 downto 0)))       -- s13
-                - to_integer(signed(row_3(7 downto 0))))      -- s33
-                ) / 6, 8));  -- Divide by 6 and fit into 8 bits
+        -- Calculate horizontal gradient (Dx)
+        dx <= to_integer(signed(row_1(7 downto 0)))    -- s13
+             - to_integer(signed(row_1(23 downto 16))) -- s11
+             + 2 * (to_integer(signed(row_2(7 downto 0)))  -- s23
+             - to_integer(signed(row_2(23 downto 16))))    -- s21
+             + to_integer(signed(row_3(7 downto 0)))    -- s33
+             - to_integer(signed(row_3(23 downto 16))); -- s31
+        
+        -- Calculate vertical gradient (Dy)
+        dy <= to_integer(signed(row_1(23 downto 16))) -- s11
+             - to_integer(signed(row_3(23 downto 16))) -- s31
+             + 2 * (to_integer(signed(row_1(15 downto 8))) -- s12
+             - to_integer(signed(row_3(15 downto 8))))     -- s32
+             + to_integer(signed(row_1(7 downto 0)))       -- s13
+             - to_integer(signed(row_3(7 downto 0)));      -- s33
+        
+        -- Compute absolute values and sum them
+        abs_dx <= abs(dx);
+        abs_dy <= abs(dy);
+        sobel_sum <= abs_dx + abs_dy;
+        
+        -- Divide the result by 6 and clamp to 8 bits (range 0-255)
+        result_int <= sobel_sum / 6;
+        
+        -- Convert the result to std_logic_vector (8 bits)
+        result <= std_logic_vector(to_unsigned(result_int, 8));
         
     case state is
         -- S0: Idle
