@@ -59,13 +59,44 @@ architecture rtl of acc is
   signal result_int: integer range 0 to 255;   -- Store the final result after division
 
 begin
+    -- Combinational process for Dx, Dy, and Sobel filter computation
+    comb_logic: process(row_1, row_2, row_3, dx, dy, abs_dx, abs_dy, sobel_sum, result_int)
+    begin
+        -- Calculate horizontal gradient (Dx)
+       dx <= to_integer(signed(resize(unsigned(row_1(7 downto 0)), 9)))    -- s13
+       - to_integer(signed(resize(unsigned(row_1(23 downto 16)), 9))) -- s11
+       + 2 * (to_integer(signed(resize(unsigned(row_2(7 downto 0)), 9)))  -- s23
+       - to_integer(signed(resize(unsigned(row_2(23 downto 16)), 9))))    -- s21
+       + to_integer(signed(resize(unsigned(row_3(7 downto 0)), 9)))    -- s33
+       - to_integer(signed(resize(unsigned(row_3(23 downto 16)), 9))); -- s31
 
+        -- Calculate vertical gradient (Dy)
+        dy <= to_integer(signed(resize(unsigned(row_1(23 downto 16)), 9))) -- s11
+       - to_integer(signed(resize(unsigned(row_3(23 downto 16)), 9))) -- s31
+       + 2 * (to_integer(signed(resize(unsigned(row_1(15 downto 8)), 9))) -- s12
+       - to_integer(signed(resize(unsigned(row_3(15 downto 8)), 9))))    -- s32
+       + to_integer(signed(resize(unsigned(row_1(7 downto 0)), 9)))       -- s13
+       - to_integer(signed(resize(unsigned(row_3(7 downto 0)), 9)));      -- s33
+
+        -- Compute absolute values and sum them
+        abs_dx <= abs(dx);
+        abs_dy <= abs(dy);
+        sobel_sum <= abs_dx + abs_dy;
+
+        -- Divide the result by 6 and clamp to 8 bits (range 0-255)
+        result_int <= sobel_sum / 6;
+
+        -- Convert the result to std_logic_vector (8 bits)
+        result <= std_logic_vector(to_unsigned(result_int, 8));
+    end process comb_logic;
+    
     -- Combinational logic for state transitions and output logic
-    cl: process(reset, dataR, start, state, addr_ptr, row_1, row_2, row_3, write_buff)
+    cl: process(reset, dataR, start, state, addr_ptr, row_1, row_2, row_3, write_buff, result)
     constant row_2_offs: integer := 88;
     constant row_3_offs: integer := 176;
     constant write_offs: integer := 25344;
     begin
+        next_write_buff <= write_buff;
         next_state <= state;
         next_addr_ptr <= addr_ptr;
         next_row_1 <= row_1;
@@ -76,33 +107,6 @@ begin
         finish <= '0';
         dataW <= (others => '0');
         addr <= (others => '0');
-        
-        -- Calculate horizontal gradient (Dx)
-        dx <= to_integer(signed(row_1(7 downto 0)))    -- s13
-             - to_integer(signed(row_1(23 downto 16))) -- s11
-             + 2 * (to_integer(signed(row_2(7 downto 0)))  -- s23
-             - to_integer(signed(row_2(23 downto 16))))    -- s21
-             + to_integer(signed(row_3(7 downto 0)))    -- s33
-             - to_integer(signed(row_3(23 downto 16))); -- s31
-        
-        -- Calculate vertical gradient (Dy)
-        dy <= to_integer(signed(row_1(23 downto 16))) -- s11
-             - to_integer(signed(row_3(23 downto 16))) -- s31
-             + 2 * (to_integer(signed(row_1(15 downto 8))) -- s12
-             - to_integer(signed(row_3(15 downto 8))))     -- s32
-             + to_integer(signed(row_1(7 downto 0)))       -- s13
-             - to_integer(signed(row_3(7 downto 0)));      -- s33
-        
-        -- Compute absolute values and sum them
-        abs_dx <= abs(dx);
-        abs_dy <= abs(dy);
-        sobel_sum <= abs_dx + abs_dy;
-        
-        -- Divide the result by 6 and clamp to 8 bits (range 0-255)
-        result_int <= sobel_sum / 6;
-        
-        -- Convert the result to std_logic_vector (8 bits)
-        result <= std_logic_vector(to_unsigned(result_int, 8));
         
     case state is
         -- S0: Idle
@@ -203,6 +207,7 @@ begin
             next_row_1 <= std_logic_vector(unsigned(row_1) srl 8);
             next_row_2 <= std_logic_vector(unsigned(row_2) srl 8);
             next_row_3 <= std_logic_vector(unsigned(row_3) srl 8);
+            next_row_1(63 downto 32) <= dataR;
             dataW <= write_buff;
             next_write_buff(7 downto 0) <= result;
             next_addr_ptr <= std_logic_vector(unsigned(addr_ptr) + 1);
