@@ -60,7 +60,7 @@ architecture rtl of acc is
 
 begin
     -- Combinational process for Dx, Dy, and Sobel filter computation
-    comb_logic: process(row_1, row_2, row_3, dx, dy, abs_dx, abs_dy, sobel_sum, result_int)
+    cl_sobel: process(row_1, row_2, row_3, dx, dy, abs_dx, abs_dy, sobel_sum, result_int)
     begin
         -- Calculate horizontal gradient (Dx)
        dx <= to_integer(signed(resize(unsigned(row_1(7 downto 0)), 9)))    -- s13
@@ -88,10 +88,10 @@ begin
 
         -- Convert the result to std_logic_vector (8 bits)
         result <= std_logic_vector(to_unsigned(result_int, 8));
-    end process comb_logic;
+    end process cl_sobel;
     
     -- Combinational logic for state transitions and output logic
-    cl: process(reset, dataR, start, state, addr_ptr, row_1, row_2, row_3, write_buff, result)
+    cl_states: process(reset, dataR, start, state, addr_ptr, row_1, row_2, row_3, write_buff, result)
     constant row_2_offs: integer := 88;
     constant row_3_offs: integer := 176;
     constant write_offs: integer := 25344;
@@ -222,7 +222,7 @@ begin
             next_state <= S0;
     end case;
             
-    end process cl;
+    end process cl_states;
 
     myprocess : process(clk)
     begin
