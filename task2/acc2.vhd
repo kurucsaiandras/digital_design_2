@@ -63,20 +63,20 @@ begin
     cl_sobel: process(row_1, row_2, row_3, dx, dy, abs_dx, abs_dy, sobel_sum, result_int)
     begin
         -- Calculate horizontal gradient (Dx)
-       dx <= to_integer(signed(resize(unsigned(row_1(7 downto 0)), 9)))    -- s13
-       - to_integer(signed(resize(unsigned(row_1(23 downto 16)), 9))) -- s11
-       + 2 * (to_integer(signed(resize(unsigned(row_2(7 downto 0)), 9)))  -- s23
-       - to_integer(signed(resize(unsigned(row_2(23 downto 16)), 9))))    -- s21
-       + to_integer(signed(resize(unsigned(row_3(7 downto 0)), 9)))    -- s33
-       - to_integer(signed(resize(unsigned(row_3(23 downto 16)), 9))); -- s31
-
+        dx <= to_integer(signed('0' & row_1(7 downto 0)))    -- s13
+             - to_integer(signed('0' & row_1(23 downto 16))) -- s11
+             + 2 * (to_integer(signed('0' & row_2(7 downto 0)))  -- s23
+             - to_integer(signed('0' & row_2(23 downto 16))))    -- s21
+             + to_integer(signed('0' & row_3(7 downto 0)))    -- s33
+             - to_integer(signed('0' & row_3(23 downto 16))); -- s31
+        
         -- Calculate vertical gradient (Dy)
-        dy <= to_integer(signed(resize(unsigned(row_1(23 downto 16)), 9))) -- s11
-       - to_integer(signed(resize(unsigned(row_3(23 downto 16)), 9))) -- s31
-       + 2 * (to_integer(signed(resize(unsigned(row_1(15 downto 8)), 9))) -- s12
-       - to_integer(signed(resize(unsigned(row_3(15 downto 8)), 9))))    -- s32
-       + to_integer(signed(resize(unsigned(row_1(7 downto 0)), 9)))       -- s13
-       - to_integer(signed(resize(unsigned(row_3(7 downto 0)), 9)));      -- s33
+        dy <= to_integer(signed('0' & row_1(23 downto 16))) -- s11
+             - to_integer(signed('0' & row_3(23 downto 16))) -- s31
+             + 2 * (to_integer(signed('0' & row_1(15 downto 8))) -- s12
+             - to_integer(signed('0' & row_3(15 downto 8))))    -- s32
+             + to_integer(signed('0' & row_1(7 downto 0)))       -- s13
+             - to_integer(signed('0' & row_3(7 downto 0)));      -- s33
 
         -- Compute absolute values and sum them
         abs_dx <= abs(dx);
