@@ -56,11 +56,11 @@ architecture rtl of acc is
   signal result: std_logic_vector(7 downto 0);
   signal dx, dy: integer range -1024 to 1023;  -- Increase range to avoid overflow during intermediate sums
   signal abs_dx, abs_dy, sobel_sum: integer range 0 to 2047;  -- Store the absolute values and their sum
-  signal result_int: integer range 0 to 255;   -- Store the final result after division
+  signal result_full: std_logic_vector(10 downto 0);   -- Store the final result after division
 
 begin
     -- Combinational process for Dx, Dy, and Sobel filter computation
-    cl_sobel: process(row_1, row_2, row_3, dx, dy, abs_dx, abs_dy, sobel_sum, result_int)
+    cl_sobel: process(row_1, row_2, row_3, dx, dy, abs_dx, abs_dy, sobel_sum, result_full)
     begin
         -- Calculate horizontal gradient (Dx)
         dx <= to_integer(signed('0' & row_1(7 downto 0)))    -- s13
@@ -83,11 +83,9 @@ begin
         abs_dy <= abs(dy);
         sobel_sum <= abs_dx + abs_dy;
 
-        -- Divide the result by 6 and clamp to 8 bits (range 0-255)
-        result_int <= sobel_sum / 6;
-
         -- Convert the result to std_logic_vector (8 bits)
-        result <= std_logic_vector(to_unsigned(result_int, 8));
+        result_full <= std_logic_vector(to_unsigned(sobel_sum, 11));
+        result <= result_full(10 downto 3);
     end process cl_sobel;
     
     -- Combinational logic for state transitions and output logic
