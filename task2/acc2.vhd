@@ -162,9 +162,9 @@ begin
         
         -- S1: Read row_3, save pixel_2
         when S1 =>
-            if (unsigned(addr_ptr) + row_3_offs = write_offs - 1) then -- if we are at the end of the picture
+            if (unsigned(addr_ptr) + row_3_offs = write_offs + 2) then -- if we are at the end of the picture (more precisely, we are at the position from which the write address is the last pixels)
                 next_state <= F;
-                next_addr_ptr <= (others => '0');
+                --next_addr_ptr <= (others => '0');
             else
                 en <= '1';
                 we <= '0';
@@ -220,7 +220,7 @@ begin
             next_state <= S1;
 
         -- F: Finish
-        when F =>
+       when F =>
             finish <= '1';
             next_state <= S0;
         -- Default case
