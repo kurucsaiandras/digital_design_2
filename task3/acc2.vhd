@@ -76,17 +76,18 @@ architecture rtl of acc is
     component three_dual_one_clock
         port (
             clk    : in  std_logic;
-            ena    : in  std_logic;                    -- Enable signal for all instances
-            enb    : in  std_logic;                    -- Enable signal for all instances
-            wea    : in  std_logic;                    -- Write enable for all instances
-            addra  : in  std_logic_vector(9 downto 0); -- Address input
-            addrb  : in  std_logic_vector(9 downto 0); -- Address input
-            dia1    : in  std_logic_vector(15 downto 0); -- Data input for write
-            dia2    : in  std_logic_vector(15 downto 0); -- Data input for write
-            dia3    : in  std_logic_vector(15 downto 0); -- Data input for write
-            dob1   : out std_logic_vector(15 downto 0); -- Data output from instance 1
-            dob2   : out std_logic_vector(15 downto 0); -- Data output from instance 2
-            dob3   : out std_logic_vector(15 downto 0)  -- Data output from instance 3
+            ena    : in  std_logic;                    
+            enb    : in  std_logic;                    
+            wea    : in  std_logic;                    
+            addra  : in  std_logic_vector(9 downto 0); 
+            addrb  : in  std_logic_vector(9 downto 0); 
+            tag_offset   : in std_logic_vector(1 downto 0);
+            dia1    : in  std_logic_vector(15 downto 0); 
+            dia2    : in  std_logic_vector(15 downto 0); 
+            dia3    : in  std_logic_vector(15 downto 0); 
+            dob1   : out std_logic_vector(15 downto 0); 
+            dob2   : out std_logic_vector(15 downto 0); 
+            dob3   : out std_logic_vector(15 downto 0)  
         );
     end component;
     
