@@ -12,15 +12,15 @@ entity simple_dual_one_clock is
   ena   : in  std_logic;
   enb   : in  std_logic;
   wea   : in  std_logic;
-  addra : in  std_logic_vector(9 downto 0);
-  addrb : in  std_logic_vector(9 downto 0);
+  addra : in  std_logic_vector(8 downto 0);
+  addrb : in  std_logic_vector(8 downto 0);
   dia   : in  std_logic_vector(31 downto 0);
   dob   : out std_logic_vector(31 downto 0)
  );
 end simple_dual_one_clock;
 
 architecture syn of simple_dual_one_clock is
- type ram_type is array (1023 downto 0) of std_logic_vector(31 downto 0);
+ type ram_type is array ((2 ** 9) downto 0) of std_logic_vector(31 downto 0);
  shared variable RAM : ram_type;
 begin
  process(clk)

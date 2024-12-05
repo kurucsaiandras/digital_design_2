@@ -8,8 +8,8 @@ entity three_dual_one_clock is
         ena    : in  std_logic;                    -- Enable signal for all instances
         enb    : in  std_logic;                    -- Enable signal for all instances
         wea    : in  std_logic;                    -- Write enable for all instances
-        addra  : in  std_logic_vector(7 downto 0); -- Address input
-        addrb  : in  std_logic_vector(7 downto 0); -- Address input
+        addra  : in  std_logic_vector(6 downto 0); -- Address input
+        addrb  : in  std_logic_vector(6 downto 0); -- Address input
         tag_offset   : in std_logic_vector(1 downto 0); -- The tag offset is in regards to the write. Write on the first row is 0, second row is 1, third row is 2 
         dia   : in  std_logic_vector(31 downto 0); -- 32-bit Data input for write
         dob1   : out std_logic_vector(31 downto 0); -- 32-bit Data output from instance 1
@@ -32,50 +32,56 @@ architecture rtl of three_dual_one_clock is
             ena   : in  std_logic;
             enb   : in  std_logic;
             wea   : in  std_logic;
-            addra : in  std_logic_vector(9 downto 0); -- Write address
-            addrb : in  std_logic_vector(9 downto 0); -- Read address
+            addra : in  std_logic_vector(8 downto 0); -- Write address
+            addrb : in  std_logic_vector(8 downto 0); -- Read address
             dia   : in  std_logic_vector(31 downto 0); -- Updated to 32-bit
             dob   : out std_logic_vector(31 downto 0)  -- Updated to 32-bit
         );
     end component;
 
-    signal addr_row1, addr_row2, addr_row3, addr_write : std_logic_vector(9 downto 0);
+    signal addr_row1, addr_row2, addr_row3, addr_write : std_logic_vector(8 downto 0);
 
 begin
 
 
-    cl_addr: process(addra, addrb, tag_offset)
+cl_addr: process(addra, addrb, tag_offset)
     begin
         case tag_offset is
-            when "00" => -- Writing to initial row 3, if we initially at "00" 
+            when "00" => -- Writing to initial row 3
                 addr_write <= '0' & '0' & addra;
                 
                 addr_row1 <= '1' & '0' & addrb;
                 addr_row2 <= '0' & '1' & addrb;
                 addr_row3 <= '0' & '0' & addrb; -- Not used at the same time as write
-    
             when "01" => -- Writing to initial row 2
                 addr_write <= '0' & '1' & addra;
                 
                 addr_row1 <= '0' & '0' & addrb;  -- Shifted offsets for cyclic behavior
                 addr_row2 <= '1' & '0' & addrb;
                 addr_row3 <= '0' & '1' & addrb;  -- Wraps back to "00"
-    
             when "10" => -- Writing to initial row 1
                 addr_write <= '1' & '0' & addra;
                 
                 addr_row1 <= '0' & '1' & addrb;  -- Shifted offsets for cyclic behavior
                 addr_row2 <= '0' & '0' & addrb;  -- Wraps back to "00"
                 addr_row3 <= '1' & '0' & addrb;  -- Continues cyclic order
-                
-            when "11" => -- Intention is to cycle hence never hit state "11"
-                -- Do nothing
-            
+
+            when "11" => -- Should not occur, but assign defaults
+                addr_write <= (others => '0');
+                addr_row1  <= (others => '0');
+                addr_row2  <= (others => '0');
+                addr_row3  <= (others => '0');
+
             when others =>
-                -- Do nothing 
-            
+                addr_write <= (others => '0');
+                addr_row1  <= (others => '0');
+                addr_row2  <= (others => '0');
+                addr_row3  <= (others => '0');
+
+
         end case;
-    end process;
+ end process;
+
 
 
 
