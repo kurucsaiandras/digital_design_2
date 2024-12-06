@@ -47,7 +47,7 @@ architecture rtl of acc is
     -- All internal signals are defined here
     type state_type is (
         I1, I2, I3, I4, I5, I6, I7,
-        S0, S1, S2, S3, S4, S_WRITE, F
+        S0, S1, S2, S3, S4, F
     ); -- Added S_WRITE state
 
     signal state, next_state          : state_type;
@@ -71,25 +71,7 @@ architecture rtl of acc is
     signal addr_write : halfword_t;
     signal curr_addr                        : halfword_t;
     signal curr_addr_ptr, next_addr_ptr     : std_logic_vector(15 downto 0);
-
-
-    component three_dual_one_clock
-        port (
-            clk    : in  std_logic;
-            ena    : in  std_logic;                    
-            enb    : in  std_logic;                    
-            wea    : in  std_logic;                    
-            addra  : in  std_logic_vector(9 downto 0); 
-            addrb  : in  std_logic_vector(9 downto 0); 
-            tag_offset   : in std_logic_vector(1 downto 0);
-            dia1    : in  std_logic_vector(15 downto 0); 
-            dia2    : in  std_logic_vector(15 downto 0); 
-            dia3    : in  std_logic_vector(15 downto 0); 
-            dob1   : out std_logic_vector(15 downto 0); 
-            dob2   : out std_logic_vector(15 downto 0); 
-            dob3   : out std_logic_vector(15 downto 0)  
-        );
-    end component;
+    
     
 begin
 
@@ -165,6 +147,10 @@ begin
         next_row_3      <= row_3;
         finish          <= '0';
         dataW <= (others => '0');
+        curr_we <= '0';
+        curr_en <= '0';
+        addr_read <= (others => '0');
+        addr_write <= (others => '0');
         
         case state is
             -- S0: Idle
@@ -289,15 +275,10 @@ begin
                     next_write_buff(7 downto 0) <= result;
                 end if;
                 addr_write <= std_logic_vector(unsigned(curr_addr_ptr) + write_offs - 2 + row_2_offs);
-                next_state <= S_WRITE;
+                next_state <= S1;
                 dataW <= curr_write_buff;
-
-            when S_WRITE =>
-                curr_we        <= '0';
-                curr_en        <= '1';
                 -- After write, prepare for next set of pixels
                 next_addr_ptr  <= std_logic_vector(unsigned(curr_addr_ptr) + 1);
-                next_state     <= S1;
 
             -- Finish state
             when F =>

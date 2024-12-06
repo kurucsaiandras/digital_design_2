@@ -13,12 +13,17 @@ entity simple_dual_one_clock is
   enb   : in  std_logic;
   wea   : in  std_logic;
 <<<<<<< HEAD
+<<<<<<< HEAD
   addra : in  std_logic_vector(8 downto 0);
   addrb : in  std_logic_vector(8 downto 0);
 =======
   addra : in  std_logic_vector(9 downto 0);
   addrb : in  std_logic_vector(9 downto 0);
 >>>>>>> 3b0b0320acfcd387c67f02977c8b174bab390338
+=======
+  addra : in  std_logic_vector(8 downto 0);
+  addrb : in  std_logic_vector(8 downto 0);
+>>>>>>> 36b9a96153cc7b7f4b80235975bcee6c27087f37
   dia   : in  std_logic_vector(31 downto 0);
   dob   : out std_logic_vector(31 downto 0)
  );
@@ -26,10 +31,14 @@ end simple_dual_one_clock;
 
 architecture syn of simple_dual_one_clock is
 <<<<<<< HEAD
+<<<<<<< HEAD
  type ram_type is array ((2 ** 9) downto 0) of std_logic_vector(31 downto 0);
 =======
  type ram_type is array (1023 downto 0) of std_logic_vector(31 downto 0);
 >>>>>>> 3b0b0320acfcd387c67f02977c8b174bab390338
+=======
+ type ram_type is array ((2 ** 9) downto 0) of std_logic_vector(31 downto 0);
+>>>>>>> 36b9a96153cc7b7f4b80235975bcee6c27087f37
  shared variable RAM : ram_type;
 begin
  process(clk)

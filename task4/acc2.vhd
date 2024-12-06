@@ -44,6 +44,9 @@ end acc;
 
 architecture rtl of acc is
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 36b9a96153cc7b7f4b80235975bcee6c27087f37
     
     component boundary_conditions
     port ( 
@@ -59,6 +62,7 @@ architecture rtl of acc is
         result4       : out std_logic_vector(7 downto 0)
     );
     end component;
+<<<<<<< HEAD
 =======
 
     -- All internal signals are defined here
@@ -97,6 +101,8 @@ architecture rtl of acc is
 
 
 >>>>>>> 3b0b0320acfcd387c67f02977c8b174bab390338
+=======
+>>>>>>> 36b9a96153cc7b7f4b80235975bcee6c27087f37
     component three_dual_one_clock
         port (
             clk    : in  std_logic;
@@ -104,12 +110,17 @@ architecture rtl of acc is
             enb    : in  std_logic;                    
             wea    : in  std_logic;                    
 <<<<<<< HEAD
+<<<<<<< HEAD
             addra  : in  std_logic_vector(6 downto 0); 
             addrb  : in  std_logic_vector(6 downto 0); 
 =======
             addra  : in  std_logic_vector(7 downto 0); 
             addrb  : in  std_logic_vector(7 downto 0); 
 >>>>>>> 3b0b0320acfcd387c67f02977c8b174bab390338
+=======
+            addra  : in  std_logic_vector(6 downto 0); 
+            addrb  : in  std_logic_vector(6 downto 0); 
+>>>>>>> 36b9a96153cc7b7f4b80235975bcee6c27087f37
             tag_offset   : in std_logic_vector(1 downto 0);
             dia    : in  std_logic_vector(31 downto 0); 
             dob1   : out std_logic_vector(31 downto 0); 
@@ -118,6 +129,9 @@ architecture rtl of acc is
         );
     end component;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 36b9a96153cc7b7f4b80235975bcee6c27087f37
     component simple_dual_one_clock
          port(
               clk   : in  std_logic;
@@ -231,6 +245,7 @@ begin
           );
         
     -- OUTPUT ASSIGNMENTS
+<<<<<<< HEAD
 =======
     
     
@@ -270,11 +285,16 @@ begin
 
     -- Output assignments
 >>>>>>> 3b0b0320acfcd387c67f02977c8b174bab390338
+=======
+>>>>>>> 36b9a96153cc7b7f4b80235975bcee6c27087f37
     en <= curr_en;
     we <= curr_we; 
     addr <= curr_addr;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 36b9a96153cc7b7f4b80235975bcee6c27087f37
     -- COMBINATIONAL LOGIC TO TO DETERMINE THE CURRENT ADDRESS TO READ/WRITE
     cl_addr: process(curr_en, curr_we, addr_write, addr_read)    
         begin
@@ -361,6 +381,7 @@ begin
                     bram_addr_read      <= (others => '0'); -- Also setting up address location for the read in next state (1st row)
                     next_bram_addr_ptr  <= (others => '0'); -- Used for reading and writing at the correct offset
                     next_bound_addr_ptr <= (others => '0');
+<<<<<<< HEAD
 =======
 -- Combinational process for Dx, Dy, and Sobel filter computation
 cl_sobel: process(row_1, row_2, row_3, dx, dy, abs_dx, abs_dy, sobel_sum, dx2, dy2, abs_dx2, abs_dy2, sobel_sum2)
@@ -491,12 +512,17 @@ end process cl_sobel;
                     -- Used for reading and writing at the correct offset
                     next_bram_addr_ptr <= (others => '0');
 >>>>>>> 3b0b0320acfcd387c67f02977c8b174bab390338
+=======
+>>>>>>> 36b9a96153cc7b7f4b80235975bcee6c27087f37
                     -------------------------------------------------------------------
                     next_state      <= I1;
                 end if;
                 
             -- Initialization states (I1 to I7): For setting up the shift registers
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 36b9a96153cc7b7f4b80235975bcee6c27087f37
             when I1 =>
                 next_row_1(31 downto 0)     <= dataR; -- Reading the data from the 1st row address location
                 curr_en                     <= '1'; 
@@ -525,6 +551,7 @@ end process cl_sobel;
                 tag_offset                  <= "01";  
                 -------------------------------------------------------------------
                 next_state                  <= I3;
+<<<<<<< HEAD
 =======
             
             when I1 =>
@@ -561,11 +588,16 @@ end process cl_sobel;
                 -------------------------------------------------------------------
                 next_state      <= I3;
 >>>>>>> 3b0b0320acfcd387c67f02977c8b174bab390338
+=======
+>>>>>>> 36b9a96153cc7b7f4b80235975bcee6c27087f37
                 
 
             when I3 =>
                 -- Reading the data from the 3rd row address location
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 36b9a96153cc7b7f4b80235975bcee6c27087f37
                 next_row_3(31 downto 0)     <= dataR;
                 curr_en                     <= '1'; 
                 curr_we                     <= '0';
@@ -577,6 +609,7 @@ end process cl_sobel;
                 bram_addr_write             <= curr_bram_addr_ptr;
                 bram_write                  <= dataR;
                 tag_offset                  <= "00"; -- To ensure dataR is stored in row3 (assuming we initialize at "00")
+<<<<<<< HEAD
 =======
                 next_row_3(31 downto 0) <= dataR;
                 curr_en         <= '1';
@@ -593,11 +626,16 @@ end process cl_sobel;
                 bram_write <= dataR;
                 tag_offset <= "00";
 >>>>>>> 3b0b0320acfcd387c67f02977c8b174bab390338
+=======
+>>>>>>> 36b9a96153cc7b7f4b80235975bcee6c27087f37
                 -------------------------------------------------------------------
                 next_state      <= I4;
 
             when I4 =>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 36b9a96153cc7b7f4b80235975bcee6c27087f37
                 next_row_1(63 downto 32)    <= dataR; -- Reading the data from the 1st row address location and have it buffered
                 curr_en                     <= '1';
                 curr_we                     <= '0';
@@ -608,6 +646,7 @@ end process cl_sobel;
                 bram_addr_write <= curr_bram_addr_ptr; -- Updating the BRAM write address location after iterating the BRAM address pointer to point to the next adjacent word (i.e. next 4 pixels) location
                 bram_write <= dataR; 
                 tag_offset <= "10"; -- To ensure buffered dataR is stored in row1 (assuming we initialize at "00")
+<<<<<<< HEAD
 =======
                 -- Reading the data from the 1st row address location and have it buffered
                 next_row_1(63 downto 32) <= dataR;
@@ -624,11 +663,16 @@ end process cl_sobel;
                 bram_write <= dataR;
                 tag_offset <= "10";
 >>>>>>> 3b0b0320acfcd387c67f02977c8b174bab390338
+=======
+>>>>>>> 36b9a96153cc7b7f4b80235975bcee6c27087f37
                 -------------------------------------------------------------------
                 next_state      <= I5;
 
             when I5 =>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 36b9a96153cc7b7f4b80235975bcee6c27087f37
                 next_row_2(63 downto 32)    <= dataR; -- Reading the data from the 2nd row address location and have it buffered
                 curr_en                     <= '1';
                 curr_we                     <= '0';
@@ -643,6 +687,7 @@ end process cl_sobel;
                 next_write_bound_buff(7 downto 0)   <= result2; -- The upper side utilizes result2 in this phase
                 bram_write                  <= dataR;  -- To ensure buffered dataR is stored in row2 (assuming we initialize at "00")
                 tag_offset                  <= "01";
+<<<<<<< HEAD
 =======
                 -- Reading the data from the 2nd row address location and have it buffered
                 next_row_2(63 downto 32) <= dataR;
@@ -659,11 +704,16 @@ end process cl_sobel;
                 bram_write <= dataR;
                 tag_offset <= "01";
 >>>>>>> 3b0b0320acfcd387c67f02977c8b174bab390338
+=======
+>>>>>>> 36b9a96153cc7b7f4b80235975bcee6c27087f37
                 -------------------------------------------------------------------
                 next_state      <= I6;
 
             when I6 =>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 36b9a96153cc7b7f4b80235975bcee6c27087f37
                 next_row_3(63 downto 32)    <= dataR; -- Reading the data from the 3rd row address location and have it buffered
                 curr_en                     <= '1';
                 curr_we                     <= '0';
@@ -743,6 +793,7 @@ end process cl_sobel;
                 ------------------------------ BRAM -------------------------------
                 next_write_bound_buff(31 downto 24) <= result2; -- The upper side
                 bram_addr_write                     <= curr_bram_addr_ptr;
+<<<<<<< HEAD
 =======
                 -- Reading the data from the 3rd row address location and have it buffered
                 next_row_3(63 downto 32) <= dataR;
@@ -845,11 +896,16 @@ end process cl_sobel;
                     tag_offset <= "01";
                 end if;
 >>>>>>> 3b0b0320acfcd387c67f02977c8b174bab390338
+=======
+>>>>>>> 36b9a96153cc7b7f4b80235975bcee6c27087f37
                 -------------------------------------------------------------------
                 next_state <= S4_init;
                 
             when S4_init =>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 36b9a96153cc7b7f4b80235975bcee6c27087f37
                 curr_en             <= '1';
                 curr_we             <= '1';
                 bound_en_write      <= '1';
@@ -917,6 +973,7 @@ end process cl_sobel;
                 bram_addr_write             <= curr_bram_addr_ptr;
                 -------------------------------------------------------------------
                 next_state                  <= S1;    
+<<<<<<< HEAD
 =======
                 -- Shift rows
                 curr_en        <= '1';
@@ -1003,21 +1060,30 @@ end process cl_sobel;
                 -------------------------------------------------------------------
                 next_state <= S1;    
 >>>>>>> 3b0b0320acfcd387c67f02977c8b174bab390338
+=======
+>>>>>>> 36b9a96153cc7b7f4b80235975bcee6c27087f37
             
             
             
             
             
+<<<<<<< HEAD
 <<<<<<< HEAD
             -------------------------------------------- SPEEDUP ---------------------------------------------------
 =======
             -------------------------------------------- SPEEDUP ---------------------------------------------
 >>>>>>> 3b0b0320acfcd387c67f02977c8b174bab390338
+=======
+            -------------------------------------------- SPEEDUP ---------------------------------------------------
+>>>>>>> 36b9a96153cc7b7f4b80235975bcee6c27087f37
             -- Now two rows wil always be buffered, which means only one row will be read from
             -- The shifting window is now buffered in memory, which allows 2 pixels to be calculated per. clock cycle
             -- S1 read pixels from main memory (2 computations)
             -- S2 write pixels into main memory (2 computations)
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 36b9a96153cc7b7f4b80235975bcee6c27087f37
             --------------------------------------------------------------------------------------------------------
             when S1 => -- Check for end of processing excluding the last upper and lower boundaries
                 if (unsigned(curr_addr_ptr) + row_3_offs = write_offs + 2) then
@@ -1040,6 +1106,7 @@ end process cl_sobel;
                             next_counter            <= std_logic_vector(unsigned(curr_counter) - 1);  -- Decrement
                         end if;
                     else
+<<<<<<< HEAD
 =======
             --------------------------------------------------------------------------------------------------
             when S1 => -- Check for end of processing
@@ -1062,10 +1129,13 @@ end process cl_sobel;
                     else
                         -- Update the BRAM address pointer
 >>>>>>> 3b0b0320acfcd387c67f02977c8b174bab390338
+=======
+>>>>>>> 36b9a96153cc7b7f4b80235975bcee6c27087f37
                         next_bram_addr_ptr <= std_logic_vector(unsigned(curr_bram_addr_ptr) + 1);
                     end if;
                     
                     -- Check for the boundary conditions
+<<<<<<< HEAD
 <<<<<<< HEAD
                     if ((unsigned(curr_addr_ptr)-1) rem 88) = 0 then -- Loading the result for the 3rd and 4th pixel of result-buffer
                         en_flag                       <= "011";
@@ -1075,6 +1145,11 @@ end process cl_sobel;
                         -- Loading the result for the 3rd and 4th pixel of result-buffer
                         next_write_buff(31 downto 16) <= "00000000" & result;
 >>>>>>> 3b0b0320acfcd387c67f02977c8b174bab390338
+=======
+                    if ((unsigned(curr_addr_ptr)-1) rem 88) = 0 then -- Loading the result for the 3rd and 4th pixel of result-buffer
+                        en_flag                       <= "011";
+                        next_write_buff(31 downto 16) <= result2 & result;
+>>>>>>> 36b9a96153cc7b7f4b80235975bcee6c27087f37
                     else
                         next_write_buff(31 downto 16) <= result2 & result;             
                     end if;
@@ -1089,24 +1164,33 @@ end process cl_sobel;
                     -- Will start at the first row and iterate to the next rows
                     tag_offset <= curr_counter;
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
                     
                     
 >>>>>>> 3b0b0320acfcd387c67f02977c8b174bab390338
+=======
+>>>>>>> 36b9a96153cc7b7f4b80235975bcee6c27087f37
                     if unsigned(curr_bram_addr_ptr) = 87 then
                         bram_addr_read <= (others => '0');
                     else
                         bram_addr_read <= std_logic_vector(unsigned(curr_bram_addr_ptr) + 1);
                     end if;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 36b9a96153cc7b7f4b80235975bcee6c27087f37
                     if unsigned(curr_addr_ptr) > 25081 then -- Begin write the buffer for the last line 
                         next_write_bound_buff(31 downto 16) <= result4 & result3;
                         --                
                     end if;
+<<<<<<< HEAD
 =======
                     
                     
 >>>>>>> 3b0b0320acfcd387c67f02977c8b174bab390338
+=======
+>>>>>>> 36b9a96153cc7b7f4b80235975bcee6c27087f37
                     -------------------------------------------------------------------  
                     next_state <= S2;
                 end if;
@@ -1114,6 +1198,9 @@ end process cl_sobel;
             
             when S2 =>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 36b9a96153cc7b7f4b80235975bcee6c27087f37
                 curr_en             <= '1';
                 curr_we             <= '1';
                 if unsigned(curr_addr_ptr) >= 25168 then
@@ -1187,6 +1274,7 @@ end process cl_sobel;
             -- Default case
             when others =>
                 next_state              <= S0;
+<<<<<<< HEAD
 =======
                 curr_en        <= '1';
                 curr_we        <= '1';
@@ -1236,6 +1324,8 @@ end process cl_sobel;
             when others =>
                 next_state <= S0;
 >>>>>>> 3b0b0320acfcd387c67f02977c8b174bab390338
+=======
+>>>>>>> 36b9a96153cc7b7f4b80235975bcee6c27087f37
         end case;
 
     end process cl_states;
@@ -1250,9 +1340,13 @@ end process cl_sobel;
                 curr_addr_ptr   <= (others => '0');
                 curr_write_buff <= (others => '0');
 <<<<<<< HEAD
+<<<<<<< HEAD
                 curr_write_bound_buff <= (others => '0');
 =======
 >>>>>>> 3b0b0320acfcd387c67f02977c8b174bab390338
+=======
+                curr_write_bound_buff <= (others => '0');
+>>>>>>> 36b9a96153cc7b7f4b80235975bcee6c27087f37
                 row_1           <= (others => '0');
                 row_2           <= (others => '0');
                 row_3           <= (others => '0');
@@ -1260,11 +1354,17 @@ end process cl_sobel;
                 curr_bram_addr_ptr <= (others => '0');
                 curr_counter <= (others => '0');
 <<<<<<< HEAD
+<<<<<<< HEAD
                 
                 
                 curr_bound_addr_ptr <= (others => '0');
 =======
 >>>>>>> 3b0b0320acfcd387c67f02977c8b174bab390338
+=======
+                
+                
+                curr_bound_addr_ptr <= (others => '0');
+>>>>>>> 36b9a96153cc7b7f4b80235975bcee6c27087f37
                 -- --------- --
             else
                 -- Update current state and signals
@@ -1275,17 +1375,23 @@ end process cl_sobel;
                 row_3           <= next_row_3;
                 curr_write_buff <= next_write_buff;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 36b9a96153cc7b7f4b80235975bcee6c27087f37
                 curr_write_bound_buff <= next_write_bound_buff;
                 -- Block mem --
                 curr_counter <= next_counter;
                 curr_bram_addr_ptr <= next_bram_addr_ptr;
                 
                 curr_bound_addr_ptr <= next_bound_addr_ptr;
+<<<<<<< HEAD
 =======
                 -- Block mem --
                 curr_counter <= next_counter;
                 curr_bram_addr_ptr <= next_bram_addr_ptr;
 >>>>>>> 3b0b0320acfcd387c67f02977c8b174bab390338
+=======
+>>>>>>> 36b9a96153cc7b7f4b80235975bcee6c27087f37
                 -- --------- --
                 
             end if;
