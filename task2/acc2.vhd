@@ -47,12 +47,12 @@ architecture rtl of acc is
 -- All internal signals are defined here
   type state_type is (I1, I2, I3, I4, I5, I6, I7, S0, S1, S2, S3, S4, F); -- States representing FSM states
   
-  signal addr_ptr, next_addr_ptr: halfword_t;
-  signal state, next_state: state_type;
-  signal row_1, next_row_1: std_logic_vector(63 downto 0) := (others => '0');
-  signal row_2, next_row_2: std_logic_vector(71 downto 0) := (others => '0');
-  signal row_3, next_row_3: std_logic_vector(79 downto 0) := (others => '0');
-  signal write_buff, next_write_buff: word_t;
+  signal addr_ptr, next_addr_ptr: halfword_t; --address pointer to read from or write to
+  signal state, next_state: state_type; --state signal
+  signal row_1, next_row_1: std_logic_vector(63 downto 0) := (others => '0'); --8 byte shift register
+  signal row_2, next_row_2: std_logic_vector(71 downto 0) := (others => '0'); --9 byte shift register
+  signal row_3, next_row_3: std_logic_vector(79 downto 0) := (others => '0'); --10 byte shift register
+  signal write_buff, next_write_buff: word_t; --temporary write buffer
   signal result: std_logic_vector(7 downto 0);
   signal dx, dy: integer range -1024 to 1023;  -- Increase range to avoid overflow during intermediate sums
   signal abs_dx, abs_dy, sobel_sum: integer range 0 to 2047;  -- Store the absolute values and their sum
@@ -162,9 +162,9 @@ begin
         
         -- S1: Read row_3, save pixel_2
         when S1 =>
-            if (unsigned(addr_ptr) + row_3_offs = write_offs - 1) then -- if we are at the end of the picture
+            if (unsigned(addr_ptr) + row_3_offs = write_offs + 2) then -- if we are at the end of the picture (more precisely, we are at the position from which the write address is the last pixels)
                 next_state <= F;
-                next_addr_ptr <= (others => '0');
+                --next_addr_ptr <= (others => '0');
             else
                 en <= '1';
                 we <= '0';
@@ -195,7 +195,11 @@ begin
             next_row_2 <= std_logic_vector(unsigned(row_2) srl 8);
             next_row_3 <= std_logic_vector(unsigned(row_3) srl 8);
             next_row_2(71 downto 40) <= dataR;
-            next_write_buff(31 downto 24) <= result;
+            if ((unsigned(addr_ptr)-1) rem 88) = 0 then --the last pixel of each row to write
+                next_write_buff(31 downto 24) <= "00000000";
+            else
+                next_write_buff(31 downto 24) <= result;
+            end if;
             next_state <= S4;
         -- S4: Write results, save row_1, save pixel_1
         when S4 =>
@@ -207,12 +211,16 @@ begin
             next_row_3 <= std_logic_vector(unsigned(row_3) srl 8);
             next_row_1(63 downto 32) <= dataR;
             dataW <= write_buff;
-            next_write_buff(7 downto 0) <= result;
+            if ((unsigned(addr_ptr)-1) rem 88) = 0 then --the first pixel of each row to write
+                next_write_buff(7 downto 0) <= "00000000";
+            else
+                next_write_buff(7 downto 0) <= result;
+            end if;
             next_addr_ptr <= std_logic_vector(unsigned(addr_ptr) + 1);
             next_state <= S1;
 
         -- F: Finish
-        when F =>
+       when F =>
             finish <= '1';
             next_state <= S0;
         -- Default case
